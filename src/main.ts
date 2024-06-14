@@ -1,7 +1,11 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+
+import { AppModule } from './config/config.module';
+import { AppDataSource } from 'data-source';
 
 async function bootstrap() {
+  await AppDataSource.initialize();
+
   const app = await NestFactory.create(AppModule);
   await app.listen(3000);
 }
