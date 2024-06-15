@@ -8,7 +8,7 @@ export class Event {
   id: number;
 
   @Column()
-  event_name: string;
+  eventName: string;
 
   @ManyToOne(() => City, (city) => city.events)
   city: City;

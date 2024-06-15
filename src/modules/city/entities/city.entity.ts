@@ -8,10 +8,10 @@ export class City {
   id: number;
 
   @Column()
-  city_name: string;
+  cityName: string;
 
   @Column()
-  country_name: string;
+  countryName: string;
 
   @OneToMany(() => Event, (event) => event.city)
   events: Event[];
