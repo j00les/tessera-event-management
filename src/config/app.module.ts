@@ -5,6 +5,7 @@ import { Event } from 'src/modules/event/entities/event.entity';
 import { City } from 'src/modules/city/entities/city.entity';
 
 import { EventModule } from 'src/modules/event/event.module';
+import { CityModule } from 'src/modules/city/city.modules';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { EventModule } from 'src/modules/event/event.module';
       synchronize: true,
     }),
     EventModule,
+    CityModule,
   ],
   controllers: [],
   providers: [],
