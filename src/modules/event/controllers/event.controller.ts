@@ -20,7 +20,7 @@ import { CreateEventDto } from '../dto/create-event';
 import {
   EventResponse,
   GetAllEventResponse,
-} from 'src/swagger/events/events.schema';
+} from '../../../swagger/events/events.schema';
 
 @ApiTags('Events')
 @Controller('events')

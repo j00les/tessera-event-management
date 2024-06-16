@@ -18,7 +18,7 @@ import {
 import { City } from '../entities/city.entity';
 import { CityService } from '../services/city.service';
 import { CreateCityDto } from '../dto /create-city';
-import { CityResponse } from 'src/swagger/cities/cities.schema';
+import { CityResponse } from '../../../swagger/cities/cities.schema';
 
 @ApiTags('Cities')
 @Controller('cities')
