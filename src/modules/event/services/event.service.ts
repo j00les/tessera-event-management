@@ -38,4 +38,8 @@ export class EventService {
 
     return this.eventRepository.save(event);
   }
+
+  async findOne(id: number): Promise<Event> {
+    return this.eventRepository.findOneBy({ id });
+  }
 }
