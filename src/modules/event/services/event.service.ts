@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Event } from '../entities/event.entity';
-import { City } from 'src/modules/city/entities/city.entity';
+import { City } from '../../city/entities/city.entity';
 import { CreateEventDto } from '../dto/create-event';
 
 @Injectable()
