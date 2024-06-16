@@ -1,13 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { NotFoundException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import { Event } from '../entities/event.entity';
+import { City } from '../../city/entities/city.entity';
+import { CreateEventDto } from '../dto/create-event';
+import { createEventDto, eventWithCity, mockCity } from '../../../fixtures/';
 import { EventService } from './event.service';
-import { eventWithCity } from '../../../fixtures/';
 
-describe('EventService', () => {
+describe('#EventService', () => {
   let service: EventService;
-  let repository: Repository<Event>;
+  let eventRepositoryMock: Partial<Repository<Event>>;
+  let cityRepositoryMock: Partial<Repository<City>>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -15,45 +20,125 @@ describe('EventService', () => {
         EventService,
         {
           provide: getRepositoryToken(Event),
-          useClass: Repository,
+          useValue: {
+            find: jest.fn(),
+            create: jest.fn(),
+            save: jest.fn(),
+            findOneBy: jest.fn(),
+          },
+        },
+        {
+          provide: getRepositoryToken(City),
+          useValue: {
+            findOne: jest.fn(),
+          },
         },
       ],
     }).compile();
 
     service = module.get<EventService>(EventService);
-    repository = module.get<Repository<Event>>(getRepositoryToken(Event));
+    eventRepositoryMock = module.get(getRepositoryToken(Event));
+    cityRepositoryMock = module.get(getRepositoryToken(City));
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should define eventService', () => {
+  it('event service should be defined', () => {
     expect(service).toBeDefined();
   });
 
   describe('#findAll', () => {
-    it('should return an array of events with their associated cities', async () => {
-      jest.spyOn(repository, 'find').mockResolvedValue(eventWithCity);
+    it('should return all events with associated cities', async () => {
+      const expectedResult = eventWithCity;
 
-      expect(repository.find).toHaveBeenCalledWith({ relations: ['city'] });
+      (eventRepositoryMock.find as jest.Mock).mockResolvedValue(expectedResult);
+
+      const result = await service.findAll();
+
+      expect(result).toEqual(expectedResult);
+      expect(eventRepositoryMock.find).toHaveBeenCalledWith({
+        relations: ['city'],
+      });
     });
 
     it('should return an empty array if no events are found', async () => {
-      jest.spyOn(repository, 'find').mockResolvedValue([]);
+      (eventRepositoryMock.find as jest.Mock).mockResolvedValue([]);
 
       const result = await service.findAll();
 
       expect(result).toEqual([]);
-      expect(repository.find).toHaveBeenCalledWith({ relations: ['city'] });
+      expect(eventRepositoryMock.find).toHaveBeenCalledWith({
+        relations: ['city'],
+      });
     });
 
     it('should throw an error if repository find method throws an error', async () => {
-      const error = new Error('Test error');
-      jest.spyOn(repository, 'find').mockRejectedValue(error);
+      const error = new Error('error');
+
+      (eventRepositoryMock.find as jest.Mock).mockRejectedValue(error);
 
       await expect(service.findAll()).rejects.toThrowError(error);
-      expect(repository.find).toHaveBeenCalledWith({ relations: ['city'] });
+      expect(eventRepositoryMock.find).toHaveBeenCalledWith({
+        relations: ['city'],
+      });
+    });
+  });
+
+  describe('#create', () => {
+    it('should create a new event', async () => {
+      (cityRepositoryMock.findOne as jest.Mock).mockResolvedValue(mockCity);
+      (eventRepositoryMock.create as jest.Mock).mockReturnValue(createEventDto);
+      (eventRepositoryMock.save as jest.Mock).mockResolvedValue(createEventDto);
+
+      const result = await service.create(createEventDto);
+
+      expect(result).toEqual(createEventDto);
+      expect(cityRepositoryMock.findOne).toHaveBeenCalledWith({
+        where: { id: createEventDto.cityId },
+      });
+      expect(eventRepositoryMock.create).toHaveBeenCalledWith({
+        eventName: createEventDto.eventName,
+        city: mockCity,
+        price: createEventDto.price,
+      });
+      expect(eventRepositoryMock.save).toHaveBeenCalledWith(createEventDto);
+    });
+
+    it('should throw NotFoundException if city is not found', async () => {
+      const createEventDto: CreateEventDto = {
+        eventName: 'New Event',
+        cityId: 999,
+        price: 200,
+      };
+
+      (cityRepositoryMock.findOne as jest.Mock).mockResolvedValue(null);
+
+      await expect(service.create(createEventDto)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(cityRepositoryMock.findOne).toHaveBeenCalledWith({
+        where: { id: createEventDto.cityId },
+      });
+    });
+  });
+
+  describe('#findOne', () => {
+    it('should find an event by id', async () => {
+      const eventId = 1;
+      const mockEvent: Event = {
+        id: eventId,
+        eventName: 'Event 1',
+        city: null,
+        price: 100,
+      };
+
+      (eventRepositoryMock.findOneBy as jest.Mock).mockResolvedValue(mockEvent);
+
+      const result = await service.findOne(eventId);
+
+      expect(result).toEqual(mockEvent);
     });
   });
 });

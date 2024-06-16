@@ -1,5 +1,6 @@
 import { CreateCityDto } from 'src/modules/city/dto /create-city';
 import { City } from 'src/modules/city/entities/city.entity';
+import { CreateEventDto } from 'src/modules/event/dto/create-event';
 import { Event } from 'src/modules/event/entities/event.entity';
 
 export const eventWithCity: Event[] = [
@@ -20,6 +21,12 @@ export const eventWithCity: Event[] = [
 export const createCityDto: CreateCityDto = {
   cityName: 'New York',
   countryName: 'US',
+};
+
+export const createEventDto: CreateEventDto = {
+  eventName: 'New Event',
+  cityId: 1,
+  price: 200,
 };
 
 export const mockCity = {
