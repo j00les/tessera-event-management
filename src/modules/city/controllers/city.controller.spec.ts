@@ -6,8 +6,6 @@ import { CityService } from '../services/city.service';
 import { createCityDto, mockCity } from '../../../fixtures';
 
 jest.mock('../../city/entities/city.entity');
-jest.mock('../../../swagger/events/events.schema');
-jest.mock('../../../swagger/cities/cities.schema');
 
 describe('#CityController', () => {
   let cityController: CityController;
