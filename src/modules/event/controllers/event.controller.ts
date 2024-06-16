@@ -21,7 +21,7 @@ export class EventController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number): Promise<Event> {
+  async findById(@Param('id') id: number): Promise<Event> {
     const foundEvent = await this.eventService.findOne(id);
 
     if (!foundEvent) {
