@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CitySchema } from '../cities/cities.schema';
+import { CityResponse } from '../cities/cities.schema';
 
 export class GetAllEventResponse {
   @ApiProperty({
@@ -15,10 +15,10 @@ export class GetAllEventResponse {
   price: number;
 
   @ApiProperty({
-    type: CitySchema,
+    type: CityResponse,
     description: 'The city where the event is held',
   })
-  city: CitySchema;
+  city: CityResponse;
 }
 
 export class EventResponse {

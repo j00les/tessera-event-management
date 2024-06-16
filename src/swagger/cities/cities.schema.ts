@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CitySchema {
+export class CityResponse {
   @ApiProperty({ example: 1, description: 'The unique identifier of the city' })
   id: number;
 
